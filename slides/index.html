@@ -235,13 +235,11 @@
     <pre><code><span class="cm">// what every dapp dev already knows</span>
 <span class="kw">await</span> window.ethereum.request({ method: <span class="str">"eth_requestAccounts"</span> });
 
-<span class="cm">// the same mental model, for storage</span>
+<span class="cm">// the same request model — now for storage</span>
 <span class="kw">await</span> window.swarm.requestAccess();
-<span class="kw">const</span> { reference, bzzUrl } = <span class="kw">await</span> window.swarm.publishData({
-  data: <span class="str">"&lt;h1&gt;Hello dweb&lt;/h1&gt;"</span>,
-  contentType: <span class="str">"text/html"</span>
-});
-<span class="cm">// → { reference: "a1b2…", bzzUrl: "bzz://a1b2…" }</span></code></pre>
+<span class="kw">await</span> window.swarm.publishData({ data, contentType });
+<span class="cm">// → { reference, bzzUrl } — full publish in Hands-on 1</span></code></pre>
+    <p>If you can connect a wallet, you can publish to Swarm — the same <span style="font-family:var(--mono)">window.*</span> request pattern.</p>
   </section>
 
   <!-- 5 postage -->
@@ -266,7 +264,8 @@
   data: <span class="str">"&lt;h1&gt;Hello dweb&lt;/h1&gt;"</span>,
   contentType: <span class="str">"text/html"</span>, name: <span class="str">"hello.html"</span> });
 
-console.log(bzzUrl);  <span class="cm">// → your first bzz:// reference</span></code></pre>
+console.log(reference);  <span class="cm">// your first content hash</span>
+console.log(bzzUrl);     <span class="cm">// → open this bzz:// URL</span></code></pre>
     <p>Then open the <b>bzz:// URL</b>. No funded node? Open the shared hash on screen, or view any
     reference through a public Swarm gateway — e.g. <span style="font-family:var(--mono)">vibing.at/ant</span>.</p>
     <p style="margin-top:1vh;font-family:var(--mono);font-size:clamp(.75rem,1.5vw,.95rem);color:#6e7568">Paste into the DevTools console · <span style="color:#ffb27a">examples/hands-on-1-publish.js</span></p>
@@ -415,12 +414,6 @@ console.log(bzzUrl);  <span class="cm">// → your first bzz:// reference</span>
     else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); go(cur-1); }
     else if(e.key==='Home'){ go(0); }
     else if(e.key==='End'){ go(slides.length-1); }
-  });
-  // click right/left half of slide to advance/go back
-  deck.addEventListener('click', function(e){
-    if(e.target.closest('.deck-ui')) return;
-    var x = e.clientX / window.innerWidth;
-    go(x > 0.33 ? cur+1 : cur-1);
   });
 })();
 </script>
