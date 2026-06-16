@@ -267,7 +267,9 @@
   contentType: <span class="str">"text/html"</span>, name: <span class="str">"hello.html"</span> });
 
 console.log(bzzUrl);  <span class="cm">// → your first bzz:// reference</span></code></pre>
-    <p>Then open the <b>bzz:// URL</b>. No funded node? Open the shared hash on screen.</p>
+    <p>Then open the <b>bzz:// URL</b>. No funded node? Open the shared hash on screen, or view any
+    reference through a public Swarm gateway — e.g. <span style="font-family:var(--mono)">vibing.at/ant</span>.</p>
+    <p style="margin-top:1vh;font-family:var(--mono);font-size:clamp(.75rem,1.5vw,.95rem);color:#6e7568">Paste into the DevTools console · <span style="color:#ffb27a">examples/hands-on-1-publish.js</span></p>
   </section>
 
   <!-- 7 open hash -->
@@ -307,6 +309,7 @@ console.log(bzzUrl);  <span class="cm">// → your first bzz:// reference</span>
   method: <span class="str">"personal_sign"</span>,
   params: [JSON.stringify(metadata), account] });</code></pre>
     <p>Portable, provable metadata. The same wallet can act as a <b>Swarm publisher identity</b>, signing what you upload.</p>
+    <p style="margin-top:1vh;font-family:var(--mono);font-size:clamp(.75rem,1.5vw,.95rem);color:#6e7568">Paste into the DevTools console · <span style="color:#ffb27a">examples/hands-on-2-sign.js</span></p>
   </section>
 
   <!-- 10 ens -->
