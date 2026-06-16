@@ -5,7 +5,7 @@
 
 (async () => {
   if (!window.swarm) {
-    console.error("window.swarm is missing — open this in Freedom Browser 0.7.4.");
+    console.error("window.swarm is missing — open this in Freedom Browser.");
     return;
   }
 

@@ -166,6 +166,15 @@
     <p style="margin-top:3vh;font-size:clamp(1.1rem,2.6vw,1.7rem);color:#c9cfc3">Writing the Decentralized Web</p>
   </section>
 
+  <!-- 1 title -->
+  <section class="slide">
+    <p class="eyebrow">DappCon · Infrastructure Layer</p>
+    <h2>Writing the dweb<span class="o">.</span><br>Not just reading it.</h2>
+    <p>Using wallet and storage APIs in Freedom Browser — publishing, signing, and resolving content
+    on peer-to-peer storage networks.</p>
+    <p style="margin-top:2vh;font-family:var(--mono);font-size:clamp(.8rem,1.6vw,1rem);color:#6e7568">Meinhard Benn · meinhard.eth</p>
+  </section>
+
   <!-- 1 pre-session -->
   <section class="slide">
     <p class="eyebrow">Before we start</p>
@@ -183,20 +192,11 @@
   </section>
 
   <!-- 2 nodes connected -->
-  <section class="slide" style="align-items:center;text-align:center">
+  <section class="slide">
     <p class="eyebrow">What ready looks like</p>
     <h2 style="margin-bottom:2vh">Swarm &amp; IPFS <span class="g">connected</span></h2>
     <img src="./images/freedom-screenshot.png" alt="Freedom Browser new tab with Swarm and IPFS nodes connected"
-      style="flex:0 0 auto;width:clamp(420px,62vw,880px);max-height:62vh;height:auto;object-fit:contain">
-  </section>
-
-  <!-- 1 title -->
-  <section class="slide">
-    <p class="eyebrow">DappCon · Infrastructure Layer</p>
-    <h2>Writing the dweb<span class="o">.</span><br>Not just reading it.</h2>
-    <p>Using wallet and storage APIs in Freedom Browser — publishing, signing, and resolving content
-    on peer-to-peer storage networks.</p>
-    <p style="margin-top:2vh;font-family:var(--mono);font-size:clamp(.8rem,1.6vw,1rem);color:#6e7568">Meinhard Benn · meinhard.eth</p>
+      style="flex:0 0 auto;width:clamp(420px,62vw,880px);max-height:60vh;height:auto;object-fit:contain;border-radius:10px;box-shadow:0 24px 60px rgba(0,0,0,.45)">
   </section>
 
   <!-- 2 objective -->
@@ -251,7 +251,7 @@
     <ul>
       <li>Swarm publishing goes through your own Swarm node — set up at <span style="font-family:var(--mono)">freedom://publish</span></li>
       <li>A postage batch (paid in xBZZ) stamps what you upload — buy / extend it in the Stamp manager</li>
-      <li>Today: nodes are pre-funded with a stamp — or I publish live and share the hash. <b>Reading and signing need none of this.</b></li>
+      <li>Today: I send you xBZZ (and xDAI for gas if needed) to buy your own stamp — or I publish live and share the hash. <b>Reading and signing need none of this.</b></li>
       <li>In production: your app or your user funds the batch</li>
     </ul>
   </section>
@@ -291,7 +291,7 @@ console.log(bzzUrl);  <span class="cm">// → your first bzz:// reference</span>
       <span class="hl">Swarm</span>&nbsp;&nbsp;postage · chunks · feeds &nbsp;<span class="ok">— write today</span><br>
       <span class="hl">IPFS</span>&nbsp;&nbsp;&nbsp;CIDs · pinning · broad ecosystem &nbsp;— read
     </div>
-    <p style="margin-top:2vh">In 0.7.4 the publish API is Swarm-only; IPFS is the read side. Same browser, both networks.</p>
+    <p style="margin-top:2vh">Today the publish API is Swarm-only; IPFS is the read side. Same browser, both networks.</p>
   </section>
 
   <!-- 9 sign -->
@@ -325,8 +325,8 @@ console.log(bzzUrl);  <span class="cm">// → your first bzz:// reference</span>
   <!-- 11 mini app -->
   <section class="slide">
     <p class="eyebrow">Mini app</p>
-    <h2>Clone. Run. <span class="o">Modify.</span></h2>
-    <pre><code>git clone &lt;repo&gt;   <span class="cm">// complete &amp; working, no build step</span></code></pre>
+    <h2>Open. Run. <span class="o">Modify.</span></h2>
+    <pre><code>examples/mini-app/index.html   <span class="cm">// already cloned — complete &amp; working, no build step</span></code></pre>
     <ul>
       <li>Publish a post: <span style="font-family:var(--mono)">window.ethereum</span> → <span style="font-family:var(--mono)">window.swarm.publishData</span> → <span style="font-family:var(--mono)">personal_sign</span></li>
       <li>Approve the per-origin prompts the first time</li>
@@ -349,12 +349,31 @@ console.log(bzzUrl);  <span class="cm">// → your first bzz:// reference</span>
     write to peer-to-peer infrastructure.</p>
   </section>
 
+  <!-- 12b sneak preview -->
+  <section class="slide">
+    <p class="eyebrow">Sneak preview · what's next</p>
+    <h2>Next: one namespace — <span class="o">navigator.freedom</span></h2>
+    <div class="big-mono" style="margin-top:1vh">
+      navigator.freedom = {<br>
+      &nbsp;&nbsp;storage,&nbsp;&nbsp;<span class="cm">// publish · files · chunks · upload status</span>&nbsp;<span class="ok">✓ today</span><br>
+      &nbsp;&nbsp;feeds,&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// create · update · read · single-owner chunks</span>&nbsp;<span class="ok">✓ today</span><br>
+      &nbsp;&nbsp;identity,&nbsp;<span class="cm">// publisher keys · getSigningIdentity · sign</span>&nbsp;<span class="ok">✓ today</span><br>
+      &nbsp;&nbsp;names,&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// resolve + set ENS contenthash</span>&nbsp;<span class="hl">soon</span><br>
+      &nbsp;&nbsp;ipfs,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// native node — write, not just read</span>&nbsp;<span class="hl">soon</span><br>
+      &nbsp;&nbsp;pay,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// native x402, pay-as-you-browse</span>&nbsp;<span class="hl">soon</span><br>
+      }
+    </div>
+    <p style="margin-top:2vh">Today's <span style="font-family:var(--mono)">window.ethereum</span> + <span style="font-family:var(--mono)">window.swarm</span> fold into a single
+    <span style="font-family:var(--mono)">navigator.freedom</span> surface — same mental model, more verbs.</p>
+  </section>
+
   <!-- 13 wrap -->
   <section class="slide">
     <p class="eyebrow">Wrap-up</p>
     <h2>From <span class="o">linking to</span> storage,<br>to <span class="g">writing to</span> it</h2>
     <ul>
-      <li>Install Freedom Browser 0.7.4 · try the demo app · publish your own page tonight</li>
+      <li>Run Freedom Browser from source · try the mini app · publish your own page tonight</li>
+      <li>Everything from today lives in <span style="font-family:var(--mono);color:#ffb27a">github.com/meinharrd/dappcon-2026</span></li>
       <li>Feedback on the <span style="font-family:var(--mono)">window.swarm</span> &amp; <span style="font-family:var(--mono)">window.ethereum</span> APIs is explicitly invited</li>
     </ul>
   </section>
@@ -362,7 +381,7 @@ console.log(bzzUrl);  <span class="cm">// → your first bzz:// reference</span>
   <div class="deck-ui">
     <button id="prev" hidden>← prev</button>
     <button id="next" hidden>next →</button>
-    <span class="count"><span id="cur">1</span> / <span id="total">14</span></span>
+    <span class="count"><span id="cur">1</span> / <span id="total">17</span></span>
   </div>
 </div>
 

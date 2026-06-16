@@ -1,6 +1,6 @@
 # Writing the Decentralized Web — DappCon 2026 Workshop
 
-Hands-on workshop on **writing** to the decentralized web with [Freedom Browser](https://freedombrowser.eth.limo) 0.7.4 — publishing content to Swarm, reading IPFS, signing with the built-in wallet, and resolving via ENS, all through native browser APIs (`window.ethereum` + `window.swarm`).
+Hands-on workshop on **writing** to the decentralized web with [Freedom Browser](https://freedombrowser.eth.limo) — publishing content to Swarm, reading IPFS, signing with the built-in wallet, and resolving via ENS, all through native browser APIs (`window.ethereum` + `window.swarm`).
 
 ## Contents
 

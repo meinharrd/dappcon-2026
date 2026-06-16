@@ -1,6 +1,6 @@
 // x402 demo server — a single paywalled endpoint.
 //
-// Freedom Browser 0.7.4 pays for x402 resources transparently: when a request
+// Freedom Browser pays for x402 resources transparently: when a request
 // gets a 402 with a PAYMENT-REQUIRED header, the browser shows an approval card,
 // signs a (gasless) stablecoin authorization, and retries — no client SDK needed.
 //

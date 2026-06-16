@@ -5,7 +5,7 @@
 
 (async () => {
   if (!window.ethereum) {
-    console.error("window.ethereum is missing — open this in Freedom Browser 0.7.4.");
+    console.error("window.ethereum is missing — open this in Freedom Browser.");
     return;
   }
 

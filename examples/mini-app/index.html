@@ -86,7 +86,7 @@
       setStatus("Freedom APIs available — wallet + Swarm ready.", "ok");
     } else {
       const missing = (d.wallet ? "" : "window.ethereum ") + (d.swarm ? "" : "window.swarm");
-      setStatus("Missing APIs (" + missing.trim() + ") — open this in Freedom Browser 0.7.4.", "err");
+      setStatus("Missing APIs (" + missing.trim() + ") — open this in Freedom Browser.", "err");
       $("connect").disabled = true;
     }
   })();

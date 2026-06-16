@@ -1,6 +1,6 @@
 # Workshop examples — Writing the dweb
 
-Runnable code for the DappCon "Writing the dweb" workshop, targeting **Freedom Browser 0.7.4**.
+Runnable code for the DappCon "Writing the dweb" workshop, targeting the current **Freedom Browser** release.
 
 Everything here uses the two providers Freedom injects into every page:
 
@@ -12,7 +12,7 @@ Everything here uses the two providers Freedom injects into every page:
 
 ## Prerequisites
 
-1. Clone and run Freedom Browser 0.7.4 from source:
+1. Clone and run Freedom Browser from source:
    ```bash
    git clone https://github.com/solardev-xyz/freedom-browser
    cd freedom-browser
@@ -45,7 +45,7 @@ connect wallet            window.ethereum
   → open / resolve         bzz://… · ENS
 ```
 
-## API quick reference (0.7.4)
+## API quick reference
 
 ```js
 // Wallet
@@ -64,7 +64,7 @@ await window.swarm.getSigningIdentity();
 
 ## x402 — pay as you browse
 
-Freedom 0.7.4 settles x402 payments **transparently**: a paywalled request returns
+Freedom settles x402 payments **transparently**: a paywalled request returns
 `402` with a `PAYMENT-REQUIRED` header, the browser shows an approval card, signs a
 gasless stablecoin authorization, attaches `PAYMENT-SIGNATURE`, and retries. The page
 just calls `fetch()` — **no x402 client SDK**. Payments are visible at `freedom://payments`.
