@@ -1,0 +1,16 @@
+{
+  "name": "x402-demo-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Minimal x402 paywalled endpoint for the Writing the dweb workshop",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@x402/core": "^2.15.0",
+    "@x402/evm": "^2.15.0",
+    "@x402/express": "^2.15.0",
+    "express": "^5.2.1"
+  }
+}

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<!-- saved from url=(0058)file:///Users/meinhard/Downloads/dweb-workshop-site_4.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Writing the dweb — DappCon Workshop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="./styles.css" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f2f5f0;
+    --ink:#16181d;
+    --muted:#6a7066;
+    --line:#d7ddd2;
+    --accent:#ec5b13;      /* swarm orange */
+    --hash:#0e7a4f;        /* success green — a received hash */
+    --panel:#111318;       /* inverted terminal panels */
+    --panel-ink:#e8ece3;
+    --display:'Inter',system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+    --body:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+  body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.55;font-size:16px}
+  a{color:var(--accent)}
+  ::selection{background:var(--accent);color:#fff}
+
+  /* ---------- header / nav ---------- */
+  header{border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--paper);z-index:20}
+  .bar{max-width:980px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .wordmark{font-family:var(--mono);font-weight:600;font-size:.85rem;letter-spacing:.02em}
+  .wordmark b{color:var(--accent)}
+  nav{display:flex;gap:4px;margin-left:auto}
+  nav a{font-family:var(--mono);font-size:.8rem;text-decoration:none;color:var(--ink);
+    padding:7px 12px;border:1px solid transparent;border-radius:3px}
+  nav a:hover{border-color:var(--line)}
+  nav a[aria-current="true"]{background:var(--ink);color:var(--paper)}
+  nav a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  main{max-width:980px;margin:0 auto;padding:0 20px 90px}
+  .view{display:none}
+  .view.active{display:block}
+
+  /* ---------- hero ---------- */
+  .hero{padding:64px 0 40px;border-bottom:1px solid var(--line)}
+  .meta{font-family:var(--mono);font-size:.78rem;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-bottom:18px}
+  .meta b{color:var(--accent);font-weight:600}
+  h1{font-family:var(--display);font-weight:900;font-size:clamp(2.1rem,5.4vw,3.6rem);line-height:1.04;letter-spacing:-.03em;max-width:18ch}
+  h1 .dim{color:var(--muted);font-weight:700}
+  .hero p.sub{margin-top:18px;max-width:56ch;color:var(--muted)}
+
+  /* signature: the flow, typed as a chunk stream */
+  .flow{margin-top:34px;background:var(--panel);color:var(--panel-ink);border-radius:6px;
+    font-family:var(--mono);font-size:.86rem;padding:22px 24px;overflow-x:auto}
+  .flow .ln{display:flex;gap:14px;white-space:nowrap;padding:3px 0;opacity:0;animation:reveal .01s forwards}
+  .flow .ln:nth-child(1){animation-delay:.15s}.flow .ln:nth-child(2){animation-delay:.5s}
+  .flow .ln:nth-child(3){animation-delay:.85s}.flow .ln:nth-child(4){animation-delay:1.2s}
+  .flow .ln:nth-child(5){animation-delay:1.55s}.flow .ln:nth-child(6){animation-delay:1.9s}
+  @keyframes reveal{to{opacity:1}}
+  .flow .idx{color:#566;min-width:3ch;text-align:right}
+  .flow .op{color:var(--panel-ink)}
+  .flow .ok{color:#5dd39e}
+  .flow .hashv{color:#ffb27a}
+  .cta-row{margin-top:30px;display:flex;gap:12px;flex-wrap:wrap}
+  .btn{font-family:var(--mono);font-size:.84rem;font-weight:600;text-decoration:none;cursor:pointer;
+    border:1px solid var(--ink);background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:3px}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  /* ---------- shared section styling ---------- */
+  h2{font-family:var(--display);font-weight:700;font-size:1.5rem;letter-spacing:-.01em;margin:54px 0 6px}
+  .chunkref{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:14px}
+  .chunkref::before{content:"bzz://";color:var(--accent)}
+  p{margin:10px 0;max-width:68ch}
+  .quiet{color:var(--muted)}
+  pre{background:var(--panel);color:#dde3d8;border-radius:6px;padding:16px 18px;overflow-x:auto;
+    font-family:var(--mono);font-size:.82rem;line-height:1.6;margin:14px 0}
+  code{font-family:var(--mono);font-size:.88em;background:#e6eae1;padding:1px 5px;border-radius:3px}
+  pre code{background:none;padding:0}
+  .kw{color:#ff9d5c}.str{color:#8fd7b0}.cm{color:#7b8577}
+
+  /* agenda timeline */
+  .slot{display:grid;grid-template-columns:88px 1fr;gap:0 22px;padding:20px 0;border-bottom:1px solid var(--line)}
+  .slot .time{font-family:var(--mono);font-size:.84rem;font-weight:600;padding-top:3px}
+  .slot.core .time{color:var(--hash)}
+  .slot h3{font-family:var(--display);font-weight:700;font-size:1.06rem;letter-spacing:-.005em}
+  .slot .tag{font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;
+    padding:2px 7px;border-radius:3px;margin-left:8px;vertical-align:2px}
+  .tag.hands{background:var(--accent);color:#fff}
+  .tag.demo{background:#e6eae1;color:var(--muted)}
+  .tag.talk{background:#e6eae1;color:var(--muted)}
+  .slot p{font-size:.94rem;margin:6px 0 0}
+  .corepath{margin:34px 0 8px;padding:16px 18px;border:1px solid var(--hash);border-radius:6px;
+    font-family:var(--mono);font-size:.82rem;color:var(--hash)}
+  .corepath b{font-weight:600}
+  ul{margin:10px 0 10px 20px;max-width:66ch}
+  li{margin:5px 0}
+
+  /* checklist */
+  .check{font-family:var(--mono);font-size:.84rem;list-style:none;margin-left:0}
+  .check li{padding-left:26px;position:relative;margin:7px 0}
+  .check li::before{content:"";position:absolute;left:0;top:4px;width:13px;height:13px;
+    border:1.5px solid var(--muted);border-radius:2px}
+
+  /* setup steps */
+  .step{display:grid;grid-template-columns:44px 1fr;gap:0 18px;padding:22px 0;border-bottom:1px solid var(--line)}
+  .step .n{font-family:var(--display);font-weight:800;font-size:1.4rem;color:var(--accent)}
+  .step h3{font-family:var(--display);font-weight:700;font-size:1.05rem;margin-bottom:4px}
+  .step p,.step ul{font-size:.94rem}
+  .ph{background:#fff3ea;border:1px dashed var(--accent);border-radius:3px;padding:0 5px;font-family:var(--mono);font-size:.85em;white-space:nowrap}
+  .callout{border-left:3px solid var(--accent);padding:10px 16px;background:#fff;border-radius:0 6px 6px 0;margin:16px 0}
+  .callout.green{border-color:var(--hash)}
+
+  /* ---------- deck ---------- */
+  #deck{position:fixed;inset:0;background:var(--panel);color:var(--panel-ink);z-index:50;display:flex;
+    flex-direction:column;font-family:var(--body)}
+  .slide{flex:1;display:none;flex-direction:column;justify-content:flex-start;padding:8vh 8vw 4vh;max-width:1200px;margin:0 auto;width:100%;overflow:hidden}
+  .slide.current{display:flex}
+  .slide .eyebrow{font-family:var(--mono);font-size:clamp(.7rem,1.4vw,.85rem);color:var(--accent);
+    letter-spacing:.06em;text-transform:uppercase;margin-bottom:2.2vh}
+  .slide h2{font-family:var(--display);font-weight:600;color:#fff;margin:0 0 2.5vh;
+    font-size:clamp(1.7rem,4.6vw,3.4rem);line-height:1.06;letter-spacing:-.03em;max-width:22ch}
+  .slide h2 .o{color:var(--accent)}
+  .slide h2 .g{color:#5dd39e}
+  .slide p{font-size:clamp(.95rem,1.9vw,1.25rem);max-width:58ch;color:#c9cfc3}
+  .slide ul,.slide ol{font-size:clamp(.92rem,1.8vw,1.15rem);color:#c9cfc3;margin-left:22px;max-width:60ch}
+  .slide li{margin:1vh 0}
+  .slide pre{background:#1b1e25;border:1px solid #2a2e37;font-size:clamp(.72rem,1.5vw,.95rem);max-width:760px}
+  .slide .big-mono{font-family:var(--mono);font-size:clamp(.85rem,2.1vw,1.3rem);line-height:1.9;color:#dde3d8}
+  .slide .big-mono .ok{color:#5dd39e}.slide .big-mono .hl{color:#ffb27a}
+  .slide img.logo{width:clamp(180px,30vw,360px);height:auto;display:block}
+  .slide .qr{width:clamp(110px,16vw,170px);height:clamp(110px,16vw,170px);border:2px dashed var(--accent);
+    border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);
+    font-size:.72rem;color:var(--accent);text-align:center;padding:10px;margin-top:2.5vh}
+  .deck-ui{position:absolute;bottom:14px;right:22px;font-family:var(--mono);font-size:.78rem}
+  .deck-ui .count{color:#6e7568}
+  .deck-logo{position:absolute;top:22px;left:22px;height:clamp(20px,2.6vw,28px);width:auto;z-index:2}
+  #deck.first .deck-logo{display:none}
+
+  @media(max-width:640px){
+    .slot,.step{grid-template-columns:1fr;gap:4px}
+  }
+  @media print{
+    header,.cta-row,#deck{display:none}
+    .view{display:block!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- ======================= DECK ======================= -->
+<div id="deck" role="dialog" aria-label="Slide deck" aria-modal="true">
+
+  <img class="deck-logo" src="./images/freedom-logo-white.svg" alt="Freedom">
+
+
+  <!-- 0 logo -->
+  <section class="slide current" style="justify-content:center;align-items:center;text-align:center">
+    <img class="logo" src="./images/freedom-logo-white.svg" alt="Freedom">
+    <p style="margin-top:3vh;font-size:clamp(1.1rem,2.6vw,1.7rem);color:#c9cfc3">Writing the Decentralized Web</p>
+  </section>
+
+  <!-- 1 pre-session -->
+  <section class="slide">
+    <p class="eyebrow">Before we start</p>
+    <h2>Get set up <span class="o">now</span></h2>
+    <ol style="margin-top:2vh;margin-left:18px">
+      <li>Clone — <span style="font-family:var(--mono);color:#ffb27a">github.com/solardev-xyz/freedom-browser</span></li>
+      <li>Set up &amp; run:
+        <div style="font-family:var(--mono);color:#ffb27a;margin-top:.4em;line-height:1.7">npm install<br>npm run ant:download<br>npm run ipfs:download<br>npm start</div>
+      </li>
+      <li>Wait for the Swarm node to connect to 20+ nodes</li>
+      <li>Open <span style="font-family:var(--mono);color:#ffb27a">freedombrowser.eth</span></li>
+      <li>Create an identity</li>
+      <li>Clone the workshop repo — <span style="font-family:var(--mono);color:#ffb27a">github.com/meinharrd/writing-the-dweb</span></li>
+    </ol>
+  </section>
+
+  <!-- 2 nodes connected -->
+  <section class="slide" style="align-items:center;text-align:center">
+    <p class="eyebrow">What ready looks like</p>
+    <h2 style="margin-bottom:2vh">Swarm &amp; IPFS <span class="g">connected</span></h2>
+    <img src="./images/freedom-screenshot.png" alt="Freedom Browser new tab with Swarm and IPFS nodes connected"
+      style="flex:0 0 auto;width:clamp(420px,62vw,880px);max-height:62vh;height:auto;object-fit:contain">
+  </section>
+
+  <!-- 1 title -->
+  <section class="slide">
+    <p class="eyebrow">DappCon · Infrastructure Layer</p>
+    <h2>Writing the dweb<span class="o">.</span><br>Not just reading it.</h2>
+    <p>Using wallet and storage APIs in Freedom Browser — publishing, signing, and resolving content
+    on peer-to-peer storage networks.</p>
+    <p style="margin-top:2vh;font-family:var(--mono);font-size:clamp(.8rem,1.6vw,1rem);color:#6e7568">Meinhard Benn · meinhard.eth</p>
+  </section>
+
+  <!-- 2 objective -->
+  <section class="slide">
+    <p class="eyebrow">Objective</p>
+    <h2>You will have <span class="g">published</span> to the dweb</h2>
+    <div class="big-mono">
+      connect wallet &nbsp;<span class="hl">window.ethereum</span><br>
+      → create content<br>
+      → publish to Swarm &nbsp;<span class="hl">window.swarm</span><br>
+      → <span class="ok">receive bzz:// reference</span><br>
+      → sign metadata &nbsp;<span class="hl">personal_sign</span><br>
+      → resolve &amp; open via <span class="hl">bzz:// · ENS</span>
+    </div>
+  </section>
+
+  <!-- 3 architecture -->
+  <section class="slide">
+    <p class="eyebrow">Architecture</p>
+    <h2>The browser is the <span class="o">bridge</span></h2>
+    <div class="big-mono">
+      Application<br>
+      &nbsp;&nbsp;↓<br>
+      Freedom Browser APIs<br>
+      &nbsp;&nbsp;↓&nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">window.ethereum</span> — identity · signing · permissions<br>
+      &nbsp;&nbsp;↓&nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">window.swarm</span> — publish · feeds · chunks<br>
+      &nbsp;&nbsp;↓&nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">bzz:// · ipfs:// · ens://</span> — open by hash / CID / name<br>
+      Swarm node → <span class="ok">bzz:// reference</span> → addressing
+    </div>
+  </section>
+
+  <!-- 4 api model -->
+  <section class="slide">
+    <p class="eyebrow">API model</p>
+    <h2>Familiar on <span class="o">purpose</span></h2>
+    <pre><code><span class="cm">// what every dapp dev already knows</span>
+<span class="kw">await</span> window.ethereum.request({ method: <span class="str">"eth_requestAccounts"</span> });
+
+<span class="cm">// the same mental model, for storage</span>
+<span class="kw">await</span> window.swarm.requestAccess();
+<span class="kw">const</span> { reference, bzzUrl } = <span class="kw">await</span> window.swarm.publishData({
+  data: <span class="str">"&lt;h1&gt;Hello dweb&lt;/h1&gt;"</span>,
+  contentType: <span class="str">"text/html"</span>
+});
+<span class="cm">// → { reference: "a1b2…", bzzUrl: "bzz://a1b2…" }</span></code></pre>
+  </section>
+
+  <!-- 5 postage -->
+  <section class="slide">
+    <p class="eyebrow">One thing before we upload</p>
+    <h2>Publishing runs through <span class="o">your node</span></h2>
+    <ul>
+      <li>Swarm publishing goes through your own Swarm node — set up at <span style="font-family:var(--mono)">freedom://publish</span></li>
+      <li>A postage batch (paid in xBZZ) stamps what you upload — buy / extend it in the Stamp manager</li>
+      <li>Today: nodes are pre-funded with a stamp — or I publish live and share the hash. <b>Reading and signing need none of this.</b></li>
+      <li>In production: your app or your user funds the batch</li>
+    </ul>
+  </section>
+
+  <!-- 6 hands-on 1 -->
+  <section class="slide">
+    <p class="eyebrow">Hands-on 1</p>
+    <h2>Publish to <span class="o">Swarm</span></h2>
+    <pre><code><span class="kw">await</span> window.swarm.requestAccess();   <span class="cm">// approve the prompt</span>
+
+<span class="kw">const</span> { reference, bzzUrl } = <span class="kw">await</span> window.swarm.publishData({
+  data: <span class="str">"&lt;h1&gt;Hello dweb&lt;/h1&gt;"</span>,
+  contentType: <span class="str">"text/html"</span>, name: <span class="str">"hello.html"</span> });
+
+console.log(bzzUrl);  <span class="cm">// → your first bzz:// reference</span></code></pre>
+    <p>Then open the <b>bzz:// URL</b>. No funded node? Open the shared hash on screen.</p>
+  </section>
+
+  <!-- 7 open hash -->
+  <section class="slide">
+    <p class="eyebrow">Checkpoint</p>
+    <h2>You just published — <span class="g">no server, no gateway</span></h2>
+    <ul>
+      <li><span style="font-family:var(--mono)">bzz://</span> reference in the console</li>
+      <li><span style="font-family:var(--mono)">bzz://…</span> opens in Freedom Browser, served from peers</li>
+      <li>Content-addressed: the reference <em>is</em> the identity of the data</li>
+    </ul>
+  </section>
+
+  <!-- 8 ipfs -->
+  <section class="slide">
+    <p class="eyebrow">Demo</p>
+    <h2>Reading the <span class="o">rest of the dweb</span></h2>
+    <p>Freedom also runs an IPFS (Kubo) node — open any <span style="font-family:var(--mono)">ipfs://</span> CID
+    or <span style="font-family:var(--mono)">ipns://</span> name straight from the address bar.</p>
+    <div class="big-mono" style="margin-top:1.5vh">
+      <span class="hl">Swarm</span>&nbsp;&nbsp;postage · chunks · feeds &nbsp;<span class="ok">— write today</span><br>
+      <span class="hl">IPFS</span>&nbsp;&nbsp;&nbsp;CIDs · pinning · broad ecosystem &nbsp;— read
+    </div>
+    <p style="margin-top:2vh">In 0.7.4 the publish API is Swarm-only; IPFS is the read side. Same browser, both networks.</p>
+  </section>
+
+  <!-- 9 sign -->
+  <section class="slide">
+    <p class="eyebrow">Hands-on 2</p>
+    <h2>Storage gives content.<br>Signing gives <span class="o">authorship</span>.</h2>
+    <pre><code><span class="kw">const</span> metadata = { title, reference, bzzUrl, timestamp };
+
+<span class="kw">const</span> [account] = <span class="kw">await</span> window.ethereum.request({
+  method: <span class="str">"eth_requestAccounts"</span> });
+
+<span class="kw">const</span> signature = <span class="kw">await</span> window.ethereum.request({
+  method: <span class="str">"personal_sign"</span>,
+  params: [JSON.stringify(metadata), account] });</code></pre>
+    <p>Portable, provable metadata. The same wallet can act as a <b>Swarm publisher identity</b>, signing what you upload.</p>
+  </section>
+
+  <!-- 10 ens -->
+  <section class="slide">
+    <p class="eyebrow">Demo</p>
+    <h2>From hash to <span class="g">name</span></h2>
+    <div class="big-mono">
+      bzz://meinhard.eth<br>
+      &nbsp;&nbsp;→ ENS contenthash &nbsp;<span class="cm">(set once, mainnet tx)</span><br>
+      &nbsp;&nbsp;→ resolved &amp; <span class="hl">verified locally (Colibri)</span><br>
+      &nbsp;&nbsp;→ <span class="ok">rendered by Freedom Browser</span>
+    </div>
+    <p style="margin-top:2vh">Setting the contenthash is a mainnet transaction — done ahead of time. Live, we resolve a pre-pointed name.</p>
+  </section>
+
+  <!-- 11 mini app -->
+  <section class="slide">
+    <p class="eyebrow">Mini app</p>
+    <h2>Clone. Run. <span class="o">Modify.</span></h2>
+    <pre><code>git clone &lt;repo&gt;   <span class="cm">// complete &amp; working, no build step</span></code></pre>
+    <ul>
+      <li>Publish a post: <span style="font-family:var(--mono)">window.ethereum</span> → <span style="font-family:var(--mono)">window.swarm.publishData</span> → <span style="font-family:var(--mono)">personal_sign</span></li>
+      <li>Approve the per-origin prompts the first time</li>
+      <li>Then change one thing — add a field, restyle the render, or write a feed update</li>
+      <li>Suggestions in the README</li>
+    </ul>
+  </section>
+
+  <!-- 12 use cases -->
+  <section class="slide">
+    <p class="eyebrow">What this unlocks</p>
+    <h2>Apps that <span class="o">write</span> user-owned data</h2>
+    <ul>
+      <li>Signed blog posts · portable profiles · dweb comments</li>
+      <li>Static site publishing · mutable feeds (<span style="font-family:var(--mono)">updateFeed</span>) for content that changes</li>
+      <li>Local-first apps that publish to peer-to-peer storage</li>
+      <li>Monetize it with native <span style="font-family:var(--mono)">x402</span> — pay-as-you-browse, no gateway or subscription</li>
+    </ul>
+    <p style="margin-top:2vh">Not about replacing hosting — about giving applications a native way to
+    write to peer-to-peer infrastructure.</p>
+  </section>
+
+  <!-- 13 wrap -->
+  <section class="slide">
+    <p class="eyebrow">Wrap-up</p>
+    <h2>From <span class="o">linking to</span> storage,<br>to <span class="g">writing to</span> it</h2>
+    <ul>
+      <li>Install Freedom Browser 0.7.4 · try the demo app · publish your own page tonight</li>
+      <li>Feedback on the <span style="font-family:var(--mono)">window.swarm</span> &amp; <span style="font-family:var(--mono)">window.ethereum</span> APIs is explicitly invited</li>
+    </ul>
+  </section>
+
+  <div class="deck-ui">
+    <button id="prev" hidden>← prev</button>
+    <button id="next" hidden>next →</button>
+    <span class="count"><span id="cur">1</span> / <span id="total">14</span></span>
+  </div>
+</div>
+
+<script>
+(function(){
+  var deck = document.getElementById('deck');
+  var slides = deck.querySelectorAll('.slide');
+  var cur = 0, curEl=document.getElementById('cur');
+  document.body.style.overflow='hidden';
+  document.getElementById('total').textContent = slides.length;
+  function go(n){
+    cur = Math.max(0, Math.min(slides.length-1, n));
+    slides.forEach(function(s,i){ s.classList.toggle('current', i===cur); });
+    deck.classList.toggle('first', cur===0);
+    curEl.textContent = cur+1;
+    if(location.hash !== '#'+(cur+1)){ history.replaceState(null, '', '#'+(cur+1)); }
+  }
+  function slideFromHash(){
+    var n = parseInt((location.hash||'').slice(1), 10);
+    return (n>=1 && n<=slides.length) ? n-1 : 0;
+  }
+  go(slideFromHash());
+  window.addEventListener('hashchange', function(){ go(slideFromHash()); });
+  document.getElementById('next').addEventListener('click', function(){go(cur+1);});
+  document.getElementById('prev').addEventListener('click', function(){go(cur-1);});
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){ e.preventDefault(); go(cur+1); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); go(cur-1); }
+    else if(e.key==='Home'){ go(0); }
+    else if(e.key==='End'){ go(slides.length-1); }
+  });
+  // click right/left half of slide to advance/go back
+  deck.addEventListener('click', function(e){
+    if(e.target.closest('.deck-ui')) return;
+    var x = e.clientX / window.innerWidth;
+    go(x > 0.33 ? cur+1 : cur-1);
+  });
+})();
+</script>
+
+
+</body></html>

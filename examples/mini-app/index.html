@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dweb publisher — workshop mini app</title>
+<style>
+  :root{
+    --bg:#111318; --panel:#1b1e25; --line:#2a2e37;
+    --ink:#e8ece3; --muted:#8b9384; --accent:#ec5b13; --ok:#5dd39e; --hash:#ffb27a;
+    --mono:ui-monospace,'SF Mono',Menlo,monospace;
+    --body:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.5;
+    min-height:100vh;display:flex;justify-content:center;padding:5vh 20px}
+  main{width:100%;max-width:640px}
+  h1{font-weight:800;font-size:1.7rem;letter-spacing:-.02em}
+  h1 .o{color:var(--accent)}
+  p.sub{color:var(--muted);margin:6px 0 24px;font-size:.95rem}
+  .status{font-family:var(--mono);font-size:.8rem;padding:10px 14px;border:1px solid var(--line);
+    border-radius:6px;margin-bottom:20px;color:var(--muted)}
+  .status.ok{color:var(--ok);border-color:var(--ok)}
+  .status.err{color:#ff8a8a;border-color:#ff8a8a}
+  label{display:block;font-size:.8rem;color:var(--muted);margin:16px 0 6px;
+    font-family:var(--mono);text-transform:uppercase;letter-spacing:.04em}
+  input,textarea{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:6px;
+    color:var(--ink);font-family:var(--body);font-size:1rem;padding:11px 13px}
+  textarea{min-height:120px;resize:vertical}
+  .row{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+  button{font-family:var(--mono);font-size:.85rem;font-weight:600;cursor:pointer;
+    border:1px solid var(--ink);background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:6px}
+  button.ghost{background:transparent;color:var(--ink)}
+  button:hover:not(:disabled){background:var(--accent);border-color:var(--accent);color:#fff}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .out{margin-top:24px;background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:16px 18px;font-family:var(--mono);font-size:.8rem;word-break:break-all;display:none}
+  .out.show{display:block}
+  .out .k{color:var(--muted)}
+  .out a{color:var(--hash)}
+  .out .sig{color:var(--ok)}
+  .out div{margin:6px 0}
+</style>
+</head>
+<body>
+<main>
+  <h1>dweb publisher<span class="o">.</span></h1>
+  <p class="sub">Publish a signed post to Swarm — wallet → storage → signature, end to end.</p>
+
+  <div id="status" class="status">Checking Freedom Browser APIs…</div>
+
+  <label for="title">Title</label>
+  <input id="title" value="My first dweb post">
+
+  <label for="body">Body (HTML allowed)</label>
+  <textarea id="body">Hello from the decentralized web. No server, no gateway.</textarea>
+
+  <div class="row">
+    <button id="connect" class="ghost">Connect wallet</button>
+    <button id="publish" disabled>Publish &amp; sign ▸</button>
+  </div>
+
+  <div id="out" class="out"></div>
+</main>
+
+<script>
+(function(){
+  const $ = (id) => document.getElementById(id);
+  const statusEl = $("status"), outEl = $("out");
+  let account = null;
+
+  function setStatus(msg, kind){ statusEl.textContent = msg; statusEl.className = "status" + (kind ? " " + kind : ""); }
+
+  // Freedom Browser injects window.ethereum and window.swarm, but window.swarm
+  // is injected on DOMContentLoaded — so poll briefly before declaring it missing.
+  function detect(){ return { wallet: typeof window.ethereum !== "undefined", swarm: typeof window.swarm !== "undefined" }; }
+
+  (async function checkApis(){
+    setStatus("Checking Freedom Browser APIs…");
+    let d = detect();
+    for (let i = 0; i < 20 && !(d.wallet && d.swarm); i++) {
+      await new Promise((r) => setTimeout(r, 100));
+      d = detect();
+    }
+    if (d.wallet && d.swarm) {
+      setStatus("Freedom APIs available — wallet + Swarm ready.", "ok");
+    } else {
+      const missing = (d.wallet ? "" : "window.ethereum ") + (d.swarm ? "" : "window.swarm");
+      setStatus("Missing APIs (" + missing.trim() + ") — open this in Freedom Browser 0.7.4.", "err");
+      $("connect").disabled = true;
+    }
+  })();
+
+  $("connect").addEventListener("click", async () => {
+    try {
+      [account] = await window.ethereum.request({ method: "eth_requestAccounts" });
+      setStatus("Connected: " + account, "ok");
+      $("publish").disabled = false;
+      $("connect").textContent = "Wallet connected";
+    } catch (e) {
+      setStatus("Connect failed: " + e.message, "err");
+    }
+  });
+
+  $("publish").addEventListener("click", async () => {
+    $("publish").disabled = true;
+    outEl.className = "out";
+    try {
+      // 1. Build the content.
+      const title = $("title").value.trim();
+      const html = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>" +
+        title + "</title></head><body><h1>" + title + "</h1>" + $("body").value + "</body></html>";
+
+      // 2. Publish to Swarm (per-origin approval on first call).
+      setStatus("Publishing to Swarm…");
+      await window.swarm.requestAccess();
+      const { reference, bzzUrl } = await window.swarm.publishData({
+        data: html, contentType: "text/html", name: "post.html",
+      });
+
+      // 3. Sign the metadata for authorship.
+      setStatus("Sign the metadata in your wallet…");
+      const metadata = { title, reference, bzzUrl, author: account, timestamp: new Date().toISOString() };
+      const signature = await window.ethereum.request({
+        method: "personal_sign", params: [JSON.stringify(metadata), account],
+      });
+
+      // 4. Done.
+      setStatus("Published and signed.", "ok");
+      outEl.className = "out show";
+      outEl.innerHTML =
+        '<div><span class="k">reference</span> ' + reference + '</div>' +
+        '<div><span class="k">open</span> <a href="' + bzzUrl + '">' + bzzUrl + '</a></div>' +
+        '<div><span class="k">author</span> ' + account + '</div>' +
+        '<div><span class="k">signature</span> <span class="sig">' + signature + '</span></div>';
+    } catch (e) {
+      setStatus("Failed: " + e.message, "err");
+    } finally {
+      $("publish").disabled = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>
