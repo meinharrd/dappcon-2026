@@ -27,7 +27,7 @@ See [`examples/README.md`](examples/README.md) for prerequisites and run instruc
 3. Open `freedombrowser.eth` and create an identity.
 4. Clone this workshop repo:
    ```bash
-   git clone https://github.com/meinharrd/writing-the-dweb.git
+   git clone https://github.com/meinharrd/dappcon-2026.git
    ```
 
 ## APIs
